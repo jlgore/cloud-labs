@@ -151,22 +151,22 @@ Resources:
             #!/bin/bash
             yum update -y
             yum install -y httpd
+
             # Get instance metadata
             instance_id=$(curl -s http://169.254.169.254/latest/meta-data/instance-id)
+            instance_type=$(curl -s http://169.254.169.254/latest/meta-data/instance-type)
             availability_zone=$(curl -s http://169.254.169.254/latest/meta-data/placement/availability-zone)
 
             # Post message to Discord webhook
             webhook_url="https://discord.com/api/webhooks/1230543969708937246/PfqOAqrJ6Ntk-MRQ0TlwppIgDU2D3Oj6fr7-aMf8C1Tkn7QgoA3klqleNIRJGs5fxhOT"
-            message="Instance $instance_id launched in $availability_zone"
-            curl -X POST -H "Content-Type: application/json" -d "{\"content\": \"$message\"}" $webhook_url
+            message="Instance $instance_id ($instance_type) launched in $availability_zone"
+            curl -X POST -H "Content-Type: application/json" -d "{\\"content\\": \\"$message\\"}" $webhook_url
 
+            # Start and enable httpd service
             service httpd start
             chkconfig httpd on
 
-            instance_id=$(curl -s http://169.254.169.254/latest/meta-data/instance-id)
-            instance_type=$(curl -s http://169.254.169.254/latest/meta-data/instance-type)
-            availability_zone=$(curl -s http://169.254.169.254/latest/meta-data/placement/availability-zone)
-            
+            # Create index.html
             cat > /var/www/html/index.html <<EOF
             <html>
             <head><title>Server Information</title></head>
